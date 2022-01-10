@@ -1,0 +1,11 @@
+[package]
+name = "calc-lalrpop"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common = { path = "../../common" }
+lalrpop-util = { version = "0.19.6", features = ["lexer"] }
+
+[build-dependencies]
+lalrpop = "0.19.6"

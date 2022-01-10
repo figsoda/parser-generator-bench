@@ -1,0 +1,14 @@
+[package]
+name = "calc-grmtools"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common = { path = "../../common" }
+cfgrammar = "0.11.1"
+lrlex = "0.11.1"
+lrpar = "0.11.1"
+
+[build-dependencies]
+cfgrammar = "0.11.1"
+lrlex = "0.11.1"

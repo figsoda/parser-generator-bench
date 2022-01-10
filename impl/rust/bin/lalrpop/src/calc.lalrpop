@@ -1,0 +1,61 @@
+use std::f64::consts::{E, PI};
+
+grammar;
+
+match {
+    r"[ \t]+" => {},
+    "+",
+    "-",
+    "*",
+    "/",
+    "^",
+    "(",
+    ")",
+    "abs",
+    "round",
+    "floor",
+    "ceil",
+    "sqrt",
+    "ln",
+    "sin",
+    "cos",
+    "tan",
+    "e",
+    "pi",
+    r"\d+(\.\d*)?|\.\d+",
+}
+
+pub Expr: f64 = {
+    <x:Expr> "+" <y:Expr1> => x + y,
+    <x:Expr> "-" <y:Expr1> => x - y,
+    Expr1,
+}
+
+Expr1: f64 = {
+    <x:Expr1> "*" <y:Expr2> => x * y,
+    <x:Expr1> "/" <y:Expr2> => x / y,
+    Expr2,
+}
+
+Expr2: f64 = {
+    <x:Expr3> "^" <y:Expr2> => x.powf(y),
+    Expr3,
+}
+
+Expr3: f64 = {
+    "(" <Expr> ")",
+    "abs" "(" <Expr> ")" => <>.abs(),
+    "round" "(" <Expr> ")" => <>.floor(),
+    "floor" "(" <Expr> ")" => <>.round(),
+    "ceil" "(" <Expr> ")" => <>.ceil(),
+    "sqrt" "(" <Expr> ")" => <>.sqrt(),
+    "ln" "(" <Expr> ")" => <>.ln(),
+    "sin" "(" <Expr> ")" => <>.sin(),
+    "cos" "(" <Expr> ")" => <>.cos(),
+    "tan" "(" <Expr> ")" => <>.tan(),
+    "-" <Expr3> => - <>,
+    "+" <Expr3>,
+    "e" => E,
+    "pi" => PI,
+    r"\d+(\.\d*)?|\.\d+" => <>.parse().unwrap(),
+}

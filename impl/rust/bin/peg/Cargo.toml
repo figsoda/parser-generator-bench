@@ -1,0 +1,8 @@
+[package]
+name = "calc-peg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common = { path = "../../common" }
+peg = "0.8.0"
