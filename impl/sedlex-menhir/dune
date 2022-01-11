@@ -1,0 +1,7 @@
+(menhir (modules calc))
+
+(executable
+  (name main)
+  (public_name calc-sedlex-menhir)
+  (preprocess (pps sedlex.ppx))
+  (libraries sedlex menhirLib))
