@@ -1,4 +1,4 @@
-{ lib, makeRustPlatform, fenix }:
+{ makeRustPlatform, fenix }:
 
 builtins.mapAttrs
   (name: _: (makeRustPlatform {
