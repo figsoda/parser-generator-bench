@@ -1,0 +1,48 @@
+_digit: '0'-'9' ;
+num: _digit {_digit} ['.' {_digit}] | '.' _digit {_digit} ;
+!whitespace: ' ' | '\t' ;
+
+<<
+import (
+    "calc-gocc/token"
+    "math"
+    "strconv"
+)
+>>
+
+Calc: Expr;
+
+Expr
+    : Expr "+" Expr1 << $0.(float64) + $2.(float64), nil >>
+    | Expr "-" Expr1 << $0.(float64) - $2.(float64), nil >>
+    | Expr1
+    ;
+
+Expr1
+    : Expr1 "*" Expr2 << $0.(float64) * $2.(float64), nil >>
+    | Expr1 "/" Expr2 << $0.(float64) / $2.(float64), nil >>
+    | Expr2
+    ;
+
+Expr2
+    : Expr3 "^" Expr2 << math.Pow($0.(float64), $2.(float64)), nil >>
+    | Expr3
+    ;
+
+Expr3
+    : "(" Expr ")" << $1, nil >>
+    | "abs" "(" Expr ")" << math.Abs($2.(float64)), nil >>
+    | "round" "(" Expr ")" << math.Round($2.(float64)), nil >>
+    | "floor" "(" Expr ")" << math.Floor($2.(float64)), nil >>
+    | "ceil" "(" Expr ")" << math.Ceil($2.(float64)), nil >>
+    | "sqrt" "(" Expr ")" << math.Sqrt($2.(float64)), nil >>
+    | "ln" "(" Expr ")" << math.Log($2.(float64)), nil >>
+    | "sin" "(" Expr ")" << math.Sin($2.(float64)), nil >>
+    | "cos" "(" Expr ")" << math.Cos($2.(float64)), nil >>
+    | "tan" "(" Expr ")" << math.Tan($2.(float64)), nil >>
+    | "-" Expr3 << - $1.(float64), nil >>
+    | "+" Expr3 << $1, nil >>
+    | "e" << math.E, nil >>
+    | "pi" << math.Pi, nil >>
+    | num << strconv.ParseFloat(string($0.(*token.Token).Lit), 10) >>
+    ;

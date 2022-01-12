@@ -21,6 +21,22 @@
         "type": "github"
       }
     },
+    "gocc-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1639410497,
+        "narHash": "sha256-39O04Gc9bw1TVO0c+ZfZm6f7prYpB6F5H0z/9z+8B6U=",
+        "owner": "goccmack",
+        "repo": "gocc",
+        "rev": "7ea699349ecad721060dc7d3600f6e88d9327c15",
+        "type": "github"
+      },
+      "original": {
+        "owner": "goccmack",
+        "repo": "gocc",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1641528457,
@@ -40,6 +56,7 @@
     "root": {
       "inputs": {
         "fenix": "fenix",
+        "gocc-src": "gocc-src",
         "nixpkgs": "nixpkgs"
       }
     },
