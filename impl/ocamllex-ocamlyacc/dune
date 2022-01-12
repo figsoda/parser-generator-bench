@@ -1,0 +1,6 @@
+(ocamllex lexer)
+(ocamlyacc parser)
+
+(executable
+  (name main)
+  (public_name calc-ocamllex-ocamlyacc))
