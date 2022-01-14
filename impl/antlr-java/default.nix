@@ -1,16 +1,37 @@
-{ stdenv, antlr, jdk, makeWrapper, jre }:
+{ stdenv, antlr, graalvm17-ce, jdk, makeWrapper, jre }:
 
-stdenv.mkDerivation rec {
-  pname = "calc-antlr-java";
-  version = "0.1.0";
+{
+  graal = stdenv.mkDerivation rec {
+    pname = "calc-antlr-java-graal";
+    version = "0.1.0";
 
-  src = ./.;
+    src = ./.;
 
-  nativeBuildInputs = [ antlr jdk makeWrapper ];
+    nativeBuildInputs = [ antlr graalvm17-ce ];
 
-  postInstall = ''
-    mkdir $out/bin
-    makeWrapper ${jre}/bin/java $out/bin/${pname} \
-      --add-flags "-cp $out/share:${antlr.jarLocation} Main"
-  '';
+    postBuild = ''
+      native-image Main ${pname} -cp .:${antlr.jarLocation}
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 ${pname} -t $out/bin
+      runHook postInstall
+    '';
+  };
+
+  openjdk = stdenv.mkDerivation rec {
+    pname = "calc-antlr-java-openjdk";
+    version = "0.1.0";
+
+    src = ./.;
+
+    nativeBuildInputs = [ antlr jdk makeWrapper ];
+
+    postInstall = ''
+      mkdir $out/bin
+      makeWrapper ${jre}/bin/java $out/bin/${pname} \
+        --add-flags "-cp $out/share:${antlr.jarLocation} Main"
+    '';
+  };
 }
