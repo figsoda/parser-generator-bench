@@ -12,7 +12,6 @@ int main() {
         calcLexer lexer(&input);
         CommonTokenStream tokens(&lexer);
         calcParser parser(&tokens);
-        parser.removeErrorListeners();
         parser.setErrorHandler(std::make_shared<BailErrorStrategy>());
         parser.expr();
     }
