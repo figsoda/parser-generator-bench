@@ -1,15 +1,22 @@
-{ stdenv, antlr4_9 }:
+{ antlr4_9, llvmPackages_latest, gccStdenv }:
 
 let antlr = antlr4_9; in
 
-stdenv.mkDerivation {
-  pname = "calc-antlr-cpp";
-  version = "0.1.0";
+builtins.mapAttrs
+  (compiler: stdenv:
+    stdenv.mkDerivation {
+      pname = "calc-antlr-cpp-${compiler}";
+      version = "0.1.0";
 
-  src = ./.;
+      src = ./.;
 
-  nativeBuildInputs = [ antlr ];
+      nativeBuildInputs = [ antlr ];
 
-  RUNTIME_INCLUDE = antlr.runtime.cpp.dev;
-  RUNTIME_LIB = antlr.runtime.cpp;
+      RUNTIME_INCLUDE = antlr.runtime.cpp.dev;
+      RUNTIME_LIB = antlr.runtime.cpp;
+    }
+  )
+{
+  clang = llvmPackages_latest.stdenv;
+  gcc = gccStdenv;
 }
