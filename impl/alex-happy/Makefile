@@ -1,7 +1,7 @@
 build:
 	alex -g Lexer.x
 	happy -g Parser.y
-	ghc --make Main -O2 -o calc-alex-happy
+	ghc Main -O2 -o $(pname)
 
 install:
-	install -Dm755 calc-alex-happy -t $(out)/bin
+	install -Dm755 $(pname) -t $(out)/bin
