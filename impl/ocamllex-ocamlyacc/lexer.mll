@@ -13,6 +13,7 @@ rule token = parse
   | ')' { RPAREN }
   | "abs" { ABS }
   | "round" { ROUND }
+  | "floor" { FLOOR }
   | "ceil" { CEIL }
   | "sqrt" { SQRT }
   | "ln" { LN }
