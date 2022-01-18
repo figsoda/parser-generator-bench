@@ -33,6 +33,8 @@ int main() {
     char* line;
     size_t size;
     for(;;) {
+        line = NULL;
+        size = 0;
         if(getline(&line, &size, stdin) < 0) {
             return 0;
         }
