@@ -11,9 +11,13 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, fenix, gocc-src, nixpkgs }: {
-    packages = nixpkgs.lib.genAttrs nixpkgs.lib.systems.supported.hydra
-      (system:
+  outputs = { self, fenix, gocc-src, nixpkgs }:
+    let
+      inherit (nixpkgs) lib;
+      forHydraSystems = lib.genAttrs lib.systems.supported.hydra;
+    in
+    {
+      packages = forHydraSystems (system:
         builtins.mapAttrs
           (name: _: (import nixpkgs {
             localSystem = { inherit system; };
@@ -24,5 +28,43 @@
           }).callPackage ./impl/${name}
             { })
           (builtins.readDir ./impl));
-  };
+
+      defaultPackage = forHydraSystems (system:
+        let
+          inherit (nixpkgs.legacyPackages.${system}) dash hyperfine
+            makeRustPlatform writers;
+          p = self.packages.${system};
+        in
+        writers.writeDashBin "benchmark" ''
+          file=''$(${(makeRustPlatform {
+            inherit (fenix.packages.${system}.minimal) cargo rustc;
+          }).buildRustPackage {
+            pname = "gen";
+            version = "0.1.0";
+
+            src = ./gen;
+
+            cargoLock.lockFile = ./gen/Cargo.lock;
+          }}/bin/gen)
+
+          ${hyperfine}/bin/hyperfine \
+            -S ${dash}/bin/dash \
+            --export-json results.json \
+            ${
+              builtins.concatStringsSep " "
+              (lib.mapAttrsFlatten (k: v: ''-n ${k} "${v}/bin/${v.pname} < $file"'') {
+                inherit (p) alex-happy antlr-go flex-bison gocc
+                  ocamllex-ocamlyacc sedlex-menhir;
+                inherit (p.rust) grmtools lalrpop peg;
+                antlr-cpp-clang = p.antlr-cpp.clang;
+                antlr-cpp-gcc = p.antlr-cpp.gcc;
+                antlr-java-graal = p.antlr-java.graal;
+                antlr-java-openjdk = p.antlr-java.openjdk;
+              })
+            } \
+
+          rm "$file"
+        ''
+      );
+    };
 }

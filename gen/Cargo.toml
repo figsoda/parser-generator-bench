@@ -1,0 +1,13 @@
+[package]
+name = "gen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fastrand = "1.6.0"
+tempfile = "3.3.0"
+
+[profile.release]
+lto = true
+panic = "abort"
+codegen-units = 1
