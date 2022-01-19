@@ -1,9 +1,8 @@
 #![feature(exclusive_range_pattern)]
 
 use fastrand::Rng;
-use tempfile::NamedTempFile;
 
-use std::io::Write;
+use std::{fs::File, io::Write};
 
 fn write_ws(w: &mut impl Write, rng: &Rng) {
     for _ in 0..rng.u8(0..3) {
@@ -92,10 +91,9 @@ fn write_expr(w: &mut impl Write, rng: &Rng, len: u8) {
 }
 
 fn main() {
-    let (mut file, path) = NamedTempFile::new().unwrap().keep().unwrap();
-    for _ in 0..64 {
+    let mut file = File::create("input").unwrap();
+    for _ in 0..1000 {
         write_expr(&mut file, &Rng::new(), 16);
         writeln!(file).unwrap();
     }
-    println!("{}", path.display());
 }

@@ -36,7 +36,9 @@
           p = self.packages.${system};
         in
         writers.writeDashBin "benchmark" ''
-          file=''$(${(makeRustPlatform {
+          cd "$(mktemp -d data-XXX)"
+
+          ${(makeRustPlatform {
             inherit (fenix.packages.${system}.minimal) cargo rustc;
           }).buildRustPackage {
             pname = "gen";
@@ -45,14 +47,14 @@
             src = ./gen;
 
             cargoLock.lockFile = ./gen/Cargo.lock;
-          }}/bin/gen)
+          }}/bin/gen
 
           ${hyperfine}/bin/hyperfine \
-            -S ${dash}/bin/dash \
+            -w 10 -r 100 -s none -S ${dash}/bin/dash \
             --export-json results.json \
             ${
               builtins.concatStringsSep " "
-              (lib.mapAttrsFlatten (k: v: ''-n ${k} "${v}/bin/${v.pname} < $file"'') {
+              (lib.mapAttrsFlatten (k: v: ''-n ${k} "${v}/bin/${v.pname} < input"'') {
                 inherit (p) alex-happy antlr-go flex-bison gocc
                   ocamllex-ocamlyacc sedlex-menhir;
                 inherit (p.rust) grmtools lalrpop peg;
@@ -61,9 +63,7 @@
                 antlr-java-graal = p.antlr-java.graal;
                 antlr-java-openjdk = p.antlr-java.openjdk;
               })
-            } \
-
-          rm "$file"
+            }
         ''
       );
     };
